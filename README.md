@@ -20,6 +20,10 @@ pip3 install -r requirements.txt
 
 ## Running
 
+Download the chrome driver(https://chromedriver.chromium.org/downloads)
+
+Open whatsapp_bot.py and add the path to your chrome driver on line 22
+
 Run the script using the following command:
 
 ```
