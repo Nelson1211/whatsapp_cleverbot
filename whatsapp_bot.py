@@ -19,7 +19,8 @@ def whatsapp_login():
     global wait, browser, Link, current_tab, new_tab
     chrome_options = Options()
     chrome_options.add_argument('--user-data-dir=./User_Data')
-    browser = webdriver.Chrome('/Users/nelson/Downloads/ChatBotSample/chromedriver', options=chrome_options)
+    chrome_driver = 'insert the path to your chrome driver'
+    browser = webdriver.Chrome(chrome_driver, options=chrome_options)
     wait = WebDriverWait(browser, 600)
     browser.get(Link)
     current_tab = browser.current_window_handle
@@ -120,14 +121,10 @@ def send_message(target, message):
         else:
             input_box.send_keys(ch)
     input_box.send_keys(Keys.ENTER)
-    print("Message sent successfully")
     time.sleep(3)
     get_message()
 
 if __name__ == "__main__":
-
-    print("Web Page Open")
-
     whatsapp_login()
     time.sleep(3)
     get_message()
