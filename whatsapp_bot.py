@@ -44,36 +44,7 @@ def check_new_messages():
         return False
     return True
 
-def check_reply_and_reply():
-    global browser
-    reply_user = browser.find_elements_by_xpath("//span[contains(@dir,'auto')]")
-    limit = len(reply_user) - 8
-    ptr = 0
-    for i in range(len(reply_user), 0, -1):
-        if i == len(reply_user):
-            ptr = 0
-        else:
-            ptr = i
-        reply_user[ptr].click()
-        time.sleep(1)
-        message_queue = browser.find_elements_by_xpath("//div[starts-with(@class,'FTBzM')]")
-        if message_queue[-1].get_attribute('class').endswith('message-in'):
-            if len(reply_user[ptr].get_attribute('title').split()) <= 2:
-                target = reply_user[ptr].get_attribute('title')
-                message_queue = message_queue[-1].find_elements_by_xpath(".//*")[1]
-                message_queue = message_queue.find_elements_by_xpath(".//*")[2]
-                for i in range(5):
-                    message_queue = message_queue.find_elements_by_xpath(".//*")[0]
-                target_message = message_queue.text
-                if len(target_message) > 0:
-                    send_message(target,target_message)
-        if i == limit:
-            break
-
-def get_message():
-    global browser
-    time.sleep(3)
-    target_message = ''
+def reply_new_messages():
     if check_new_messages():
         unreadMsgs = browser.find_elements_by_xpath("//span[contains(@class,'P6z4j')]")
         unreadMsgs = unreadMsgs[0].find_element_by_xpath('..')
@@ -87,12 +58,68 @@ def get_message():
         message_queue = browser.find_elements_by_xpath("//div[starts-with(@class,'FTBzM')]")
         if len(target.split()) <= 2:
             message_queue = message_queue[-1].find_elements_by_xpath(".//*")[1]
-            message_queue = message_queue.find_elements_by_xpath(".//*")[2]
-            for i in range(5):
+            message_queue = message_queue.find_elements_by_xpath(".//div[contains(@class,'-N6Gq')]")[0]
+            for i in range(4):
+                message_queue = message_queue.find_elements_by_xpath(".//*")[0]
+            num = 0
+            if len(message_queue.find_elements_by_xpath(".//*")) > 1:
+                message_queue = message_queue.find_elements_by_xpath(".//*")[2]
+                num = 5
+            else:
+                num = 6
+            for i in range(num):
                 message_queue = message_queue.find_elements_by_xpath(".//*")[0]
             target_message = message_queue.text
         if len(target_message) > 0:
             send_message(target,target_message)
+
+def get_targets():
+    global browser
+    browser.refresh()
+    time.sleep(5)
+    reply_user = browser.find_elements_by_xpath("//span[contains(@dir,'auto')]")
+    limit = len(reply_user) - 15
+    ptr = 0
+    targets = []
+    for i in range(len(reply_user), 0, -1):
+        if i == len(reply_user):
+            ptr = 0
+        else:
+            ptr = i
+        reply_user[ptr].click()
+        time.sleep(1)
+        message_queue = browser.find_elements_by_xpath("//div[starts-with(@class,'FTBzM')]")
+        if message_queue[-1].get_attribute('class').endswith('message-in'):
+            target = reply_user[ptr].get_attribute('title')
+            if target != '' and len(target.split(' ')) <= 2:
+                targets.append(target)
+        if i == limit:
+            return targets
+
+def check_reply_and_reply():
+    global browser
+    targets = get_targets()
+    if targets != None:
+        for target in targets:
+            print(target)
+            x_arg = "//span[contains(@title,'{}')]".format(target)
+            send_to = browser.find_element_by_xpath(x_arg)
+            send_to.click()
+            message_queue = browser.find_elements_by_xpath("//div[starts-with(@class,'FTBzM')]")
+            if len(target.split()) <= 2:
+                message_queue = message_queue[-1].find_elements_by_xpath(".//*")[1]
+                message_queue = message_queue.find_elements_by_xpath(".//div[contains(@class,'-N6Gq')]")[0]
+                for i in range(4):
+                    message_queue = message_queue.find_elements_by_xpath(".//*")[0]
+                target_message = message_queue.text
+            print(target_message)
+            if len(target_message) > 0:
+                send_message(target,target_message)
+
+def get_message():
+    global browser
+    time.sleep(3)
+    reply_new_messages()
     check_reply_and_reply()
     time.sleep(3)
     get_message()
@@ -121,10 +148,14 @@ def send_message(target, message):
         else:
             input_box.send_keys(ch)
     input_box.send_keys(Keys.ENTER)
+    print("Message sent successfully")
     time.sleep(3)
     get_message()
 
 if __name__ == "__main__":
+
+    print("Web Page Open")
+
     whatsapp_login()
     time.sleep(3)
     get_message()
