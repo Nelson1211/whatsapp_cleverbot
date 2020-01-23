@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Download and install Python 3.7(https://www.python.org/downloads/release/python-376/)
+Download and install Python 3(https://www.python.org/downloads/release/python-376/)
 
 ### Installing
 
