@@ -20,7 +20,7 @@ def whatsapp_login():
     global wait, browser, Link, current_tab, new_tab
     chrome_options = Options()
     chrome_options.add_argument('--user-data-dir=./User_Data')
-    browser = webdriver.Chrome('/Users/nelson/Downloads/ChatBotSample/chromedriver', options=chrome_options)
+    browser = webdriver.Chrome(<path to chrome driver>, options=chrome_options)
     wait = WebDriverWait(browser, 600)
     browser.get(Link)
     current_tab = browser.current_window_handle
